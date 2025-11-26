@@ -22,3 +22,27 @@ def criar_exemplar_service(db: Session, exemplar_data: ExemplarCreate):
     db.refresh(novo_exemplar)
     
     return novo_exemplar
+
+def excluir_exemplares_service(db: Session, livro_id: int, quantidade: int):
+    livro = db.query(Livro).filter(Livro.id == livro_id).first()
+    if not livro:
+        raise ValueError("livro-nao-encontrado")
+    
+    exemplares_para_excluir = db.query(Exemplar).filter(
+        Exemplar.livro_id == livro_id,
+        Exemplar.status == "disponivel"
+    ).limit(quantidade).all()
+    
+    if len(exemplares_para_excluir) < quantidade:
+        raise ValueError("quantidade-insuficiente")
+    
+    for exemplar in exemplares_para_excluir:
+        db.delete(exemplar)
+    
+    db.commit()
+    
+    return {
+        "livro_id": livro_id,
+        "exemplares_excluidos": quantidade,
+        "titulo_livro": livro.titulo
+    }

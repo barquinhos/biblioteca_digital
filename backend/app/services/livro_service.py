@@ -101,3 +101,14 @@ def listar_quantidade_exemplares_por_livro(db: Session) -> List[Dict]:
         }
         for livro_id, titulo, autor, total_exemplares, disponiveis, emprestados, manutencao in resultado
     ]
+
+def buscar_livros_service(db: Session, query: str):
+    """Busca simples em título, autor, sinopse, editora e ano de publicação."""
+    termo = f"%{query}%"
+    return db.query(Livro).filter(
+        (Livro.titulo.ilike(termo)) |
+        (Livro.autor.ilike(termo)) |
+        (Livro.sinopse.ilike(termo)) | 
+        (Livro.editora.ilike(termo)) |
+        (Livro.ano_publicacao.ilike(termo))
+    ).all()

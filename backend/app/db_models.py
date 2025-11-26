@@ -24,16 +24,6 @@ class User(Base):
         cascade="all, delete-orphan",
         passive_deletes=True,
     )
-#     reservas: Mapped[list["Reserva"]] = relationship(
-#         back_populates="usuario",
-#         cascade="all, delete-orphan", 
-#         passive_deletes=True,
-#     )
-#     multas: Mapped[list["Multa"]] = relationship(
-#         back_populates="usuario",
-#         cascade="all, delete-orphan",
-#         passive_deletes=True,
-#     )
 
 class Livro(Base):
     __tablename__ = "livros"
@@ -51,11 +41,6 @@ class Livro(Base):
         cascade="all, delete-orphan",
         passive_deletes=True,
     )
-#     reservas: Mapped[list["Reserva"]] = relationship(
-#         back_populates="livro", 
-#         cascade="all, delete-orphan",
-#         passive_deletes=True,
-#     )
 
 class Exemplar(Base):
     __tablename__ = "exemplares"
@@ -102,32 +87,3 @@ class Emprestimo(Base):
 
     usuario: Mapped["User"] = relationship(back_populates="emprestimos")
     exemplar: Mapped["Exemplar"] = relationship(back_populates="emprestimos")
-    # multas: Mapped[list["Multa"]] = relationship(
-    #     back_populates="emprestimo",
-    #     cascade="all, delete-orphan",
-    #     passive_deletes=True,
-    # )
-
-# # -----------------------------
-# # Reserva
-# # -----------------------------
-# class Reserva(Base):
-#     __tablename__ = "reservas"
-
-#     id: Mapped[int] = mapped_column(primary_key=True, index=True)
-#     usuario_id: Mapped[int] = mapped_column(
-#         ForeignKey("usuarios.id", ondelete="CASCADE"),
-#         index=True,
-#         nullable=False,
-#     )
-#     livro_id: Mapped[int] = mapped_column(
-#         ForeignKey("livros.id", ondelete="CASCADE"),
-#         index=True, 
-#         nullable=False,
-#     )
-#     data_reserva: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
-#     data_expiracao: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
-#     status: Mapped[str] = mapped_column(String(20), nullable=False, default="pendente", index=True)  # pendente, ativa, cancelada, expirada, concluida
-
-#     usuario: Mapped["User"] = relationship(back_populates="reservas")
-#     livro: Mapped["Livro"] = relationship(back_populates="reservas")

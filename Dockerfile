@@ -6,8 +6,6 @@ WORKDIR /app
 COPY pyproject.toml .
 RUN pip install --no-cache-dir uv && pip install --no-cache-dir .
 
-
-
 # Copia o código
 COPY backend ./backend
 
