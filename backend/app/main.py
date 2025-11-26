@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from backend.app.database import Base, engine
-from backend.app.routers import auth, auth_livro
+from backend.app.routers import auth, auth_livro, emprestimo, exemplar
 
 Base.metadata.drop_all(bind=engine)
 Base.metadata.create_all(bind=engine)
@@ -22,4 +22,6 @@ app.add_middleware(
 )
 
 app.include_router(auth.router) 
-app.include_router(auth_livro.router) 
+app.include_router(auth_livro.router)
+app.include_router(emprestimo.router)
+app.include_router(exemplar.router)

@@ -5,10 +5,6 @@ def tipo_de_usuario(v: str) -> str:
     if v not in ["bibliotecario", "aluno", "professor"]:
         raise ValueError("Tipo de usuário inválido")
     return v.lower()
-
-def status_usuario(v: str) -> str:
-    if v not in ["ativo", "suspenso", "inativo"]:
-        raise ValueError("Status de usuário inválido")
     
 def validar_titulo(titulo: Any) -> str:
     if not isinstance(titulo, str):
@@ -68,3 +64,11 @@ def validar_ano_publicacao(ano: Any) -> Optional[int]:
         raise ValueError(f'Ano de publicação inválido (ano atual: {ano_atual})')
     
     return ano_int
+
+def tipo_de_usuario(v: str) -> str: # para emprestimo_service
+    tipos_permitidos = ["aluno", "professor", "bibliotecario"]
+    
+    if v not in tipos_permitidos:
+        raise ValueError(f"Tipo de usuário deve ser um dos: {', '.join(tipos_permitidos)}")
+    
+    return v

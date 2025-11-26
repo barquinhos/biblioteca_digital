@@ -1,12 +1,12 @@
+from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from backend.app.database import get_db
-from backend.app.models.livro import LivroCreate, LivroOut, LivroUpdate
-from backend.app.services.livro_service import criar_livro_service
+from backend.app.models.livro import LivroCreate, LivroOut, LivroUpdate, QuantidadeExemplaresOut
 
-from backend.app.db_models import Livro
-from backend.app.services.livro_service import deletar_livro_service 
+from backend.app.db_models import Exemplar, Livro
+from backend.app.services.livro_service import criar_livro_service, deletar_livro_service, listar_quantidade_exemplares_por_livro
 
 router = APIRouter(prefix="/livros", tags=["livros"])
 
@@ -78,3 +78,36 @@ def deletar_livro(livro_id: int, db: Session = Depends(get_db)):
                 detail="Livro não encontrado"
             )
         raise
+
+@router.get("/{livro_id}/quantidade-exemplares", response_model=QuantidadeExemplaresOut)
+def obter_quantidade_exemplares_livro(livro_id: int, db: Session = Depends(get_db)):
+    """
+    Obtém a quantidade de exemplares de um livro específico
+    """
+    try:
+        livro = db.query(Livro).filter(Livro.id == livro_id).first()
+        if not livro:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Livro não encontrado"
+            )
+        
+        total = db.query(Exemplar).filter(Exemplar.livro_id == livro_id).count()
+        disponiveis = db.query(Exemplar).filter(Exemplar.livro_id == livro_id, Exemplar.status == "disponivel").count()
+        emprestados = db.query(Exemplar).filter(Exemplar.livro_id == livro_id, Exemplar.status == "emprestado").count()
+        manutencao = db.query(Exemplar).filter(Exemplar.livro_id == livro_id, Exemplar.status == "manutencao").count()
+        
+        return {
+            "livro_id": livro.id,
+            "titulo": livro.titulo,
+            "autor": livro.autor,
+            "total_exemplares": total,
+            "disponiveis": disponiveis,
+            "emprestados": emprestados,
+            "manutencao": manutencao
+        }
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Erro ao obter quantidade de exemplares: {str(e)}"
+        )

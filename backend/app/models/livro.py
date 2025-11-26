@@ -48,3 +48,15 @@ class LivroOut(LivroBase):
     model_config = ConfigDict(from_attributes=True)
     id: int = Field(..., ge=1, description="ID do livro")
     data_cadastro: datetime = Field(..., description="Data de cadastro no sistema")
+
+class QuantidadeExemplaresOut(BaseModel):
+    livro_id: int = Field(..., description="ID do livro")
+    titulo: str = Field(..., description="Título do livro")
+    autor: str = Field(..., description="Autor do livro")
+    total_exemplares: int = Field(..., description="Total de exemplares")
+    disponiveis: int = Field(..., description="Exemplares disponíveis")
+    emprestados: int = Field(..., description="Exemplares emprestados")
+    manutencao: int = Field(..., description="Exemplares em manutenção")
+    
+    class Config:
+        from_attributes = True

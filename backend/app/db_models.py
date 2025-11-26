@@ -19,11 +19,11 @@ class User(Base):
     status: Mapped[str] = mapped_column(String(20), nullable=False, default="ativo", index=True)  # ativo, suspenso, inativo
     motivo_suspensao: Mapped[str | None] = mapped_column(Text, nullable=True)
     
-#     emprestimos: Mapped[list["Emprestimo"]] = relationship(
-#         back_populates="usuario", 
-#         cascade="all, delete-orphan",
-#         passive_deletes=True,
-#     )
+    emprestimos: Mapped[list["Emprestimo"]] = relationship(
+        back_populates="usuario", 
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
 #     reservas: Mapped[list["Reserva"]] = relationship(
 #         back_populates="usuario",
 #         cascade="all, delete-orphan", 
@@ -46,75 +46,67 @@ class Livro(Base):
     sinopse: Mapped[str | None] = mapped_column(Text, nullable=True)
     data_cadastro: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     
-#     exemplares: Mapped[list["Exemplar"]] = relationship(
-#         back_populates="livro",
-#         cascade="all, delete-orphan",
-#         passive_deletes=True,
-#     )
+    exemplares: Mapped[list["Exemplar"]] = relationship(
+        back_populates="livro",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
 #     reservas: Mapped[list["Reserva"]] = relationship(
 #         back_populates="livro", 
 #         cascade="all, delete-orphan",
 #         passive_deletes=True,
 #     )
 
-# # -----------------------------
-# # Exemplar
-# # -----------------------------
-# class Exemplar(Base):
-#     __tablename__ = "exemplares"
-#     __table_args__ = (
-#         UniqueConstraint("codigo", name="uq_exemplares_codigo"),
-#     )
+class Exemplar(Base):
+    __tablename__ = "exemplares"
+    __table_args__ = (
+        UniqueConstraint("codigo", name="uq_exemplares_codigo"),
+    )
 
-#     id: Mapped[int] = mapped_column(primary_key=True, index=True)
-#     codigo: Mapped[str] = mapped_column(String(50), nullable=False, index=True, unique=True)
-#     livro_id: Mapped[int] = mapped_column(
-#         ForeignKey("livros.id", ondelete="CASCADE"),
-#         index=True,
-#         nullable=False,
-#     )
-#     localizacao: Mapped[str | None] = mapped_column(String(100), nullable=True)
-#     status: Mapped[str] = mapped_column(String(20), nullable=False, default="disponivel", index=True)  # disponivel, emprestado, manutencao, reservado
-#     data_aquisicao: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    codigo: Mapped[str] = mapped_column(String(50), nullable=False, index=True, unique=True)
+    livro_id: Mapped[int] = mapped_column(
+        ForeignKey("livros.id", ondelete="CASCADE"),
+        index=True,
+        nullable=False,
+    )
+    status: Mapped[str] = mapped_column(String(20), nullable=False, default="disponivel", index=True)  # disponivel, emprestado, manutencao, reservado
+    data_aquisicao: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
 
-#     livro: Mapped["Livro"] = relationship(back_populates="exemplares")
-#     emprestimos: Mapped[list["Emprestimo"]] = relationship(
-#         back_populates="exemplar",
-#         cascade="all, delete-orphan", 
-#         passive_deletes=True,
-#     )
+    livro: Mapped["Livro"] = relationship(back_populates="exemplares")
+    emprestimos: Mapped[list["Emprestimo"]] = relationship(
+        back_populates="exemplar",
+        cascade="all, delete-orphan", 
+        passive_deletes=True,
+    )
 
+class Emprestimo(Base):
+    __tablename__ = "emprestimos"
 
-# # -----------------------------
-# # Empréstimo
-# # -----------------------------
-# class Emprestimo(Base):
-#     __tablename__ = "emprestimos"
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    usuario_id: Mapped[int] = mapped_column(
+        ForeignKey("usuarios.id", ondelete="CASCADE"),
+        index=True,
+        nullable=False,
+    )
+    exemplar_id: Mapped[int] = mapped_column(
+        ForeignKey("exemplares.id", ondelete="CASCADE"), 
+        index=True,
+        nullable=False,
+    )
+    data_emprestimo: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    data_devolucao_prevista: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    data_devolucao_real: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    status: Mapped[str] = mapped_column(String(20), nullable=False, default="ativo", index=True)  # ativo, finalizado, atrasado, cancelado
+    valor_multa: Mapped[float] = mapped_column(nullable=False, default=0.0)
 
-#     id: Mapped[int] = mapped_column(primary_key=True, index=True)
-#     usuario_id: Mapped[int] = mapped_column(
-#         ForeignKey("usuarios.id", ondelete="CASCADE"),
-#         index=True,
-#         nullable=False,
-#     )
-#     exemplar_id: Mapped[int] = mapped_column(
-#         ForeignKey("exemplares.id", ondelete="CASCADE"), 
-#         index=True,
-#         nullable=False,
-#     )
-#     data_emprestimo: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
-#     data_devolucao_prevista: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
-#     data_devolucao_real: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
-#     status: Mapped[str] = mapped_column(String(20), nullable=False, default="ativo", index=True)  # ativo, finalizado, atrasado, cancelado
-#     valor_multa: Mapped[float] = mapped_column(nullable=False, default=0.0)
-
-#     usuario: Mapped["User"] = relationship(back_populates="emprestimos")
-#     exemplar: Mapped["Exemplar"] = relationship(back_populates="emprestimos")
-#     multas: Mapped[list["Multa"]] = relationship(
-#         back_populates="emprestimo",
-#         cascade="all, delete-orphan",
-#         passive_deletes=True,
-#     )
+    usuario: Mapped["User"] = relationship(back_populates="emprestimos")
+    exemplar: Mapped["Exemplar"] = relationship(back_populates="emprestimos")
+    # multas: Mapped[list["Multa"]] = relationship(
+    #     back_populates="emprestimo",
+    #     cascade="all, delete-orphan",
+    #     passive_deletes=True,
+    # )
 
 # # -----------------------------
 # # Reserva

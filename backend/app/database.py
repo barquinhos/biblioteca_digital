@@ -1,6 +1,5 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
-import os
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///./biblioteca.db"
 
