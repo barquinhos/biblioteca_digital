@@ -131,30 +131,3 @@ class Emprestimo(Base):
 
 #     usuario: Mapped["User"] = relationship(back_populates="reservas")
 #     livro: Mapped["Livro"] = relationship(back_populates="reservas")
-
-# # -----------------------------
-# # Multa
-# # -----------------------------
-# class Multa(Base):
-#     __tablename__ = "multas"
-
-#     id: Mapped[int] = mapped_column(primary_key=True, index=True)
-#     usuario_id: Mapped[int] = mapped_column(
-#         ForeignKey("usuarios.id", ondelete="CASCADE"),
-#         index=True,
-#         nullable=False,
-#     )
-#     emprestimo_id: Mapped[int | None] = mapped_column(
-#         ForeignKey("emprestimos.id", ondelete="SET NULL"),
-#         index=True, 
-#         nullable=True,
-#     )
-#     valor: Mapped[float] = mapped_column(nullable=False)
-#     valor_pago: Mapped[float] = mapped_column(nullable=False, default=0.0)
-#     status: Mapped[str] = mapped_column(String(20), nullable=False, default="pendente", index=True)  # pendente, paga, cancelada
-#     data_vencimento: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
-#     data_pagamento: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
-#     motivo: Mapped[str] = mapped_column(Text, nullable=False)
-
-#     usuario: Mapped["User"] = relationship(back_populates="multas")
-#     emprestimo: Mapped["Emprestimo"] = relationship(back_populates="multas")
