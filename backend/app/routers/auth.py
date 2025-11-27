@@ -83,9 +83,6 @@ def listar_todos_usuarios(db: Session = Depends(get_db)):
     
 @router.get("/usuarios/pesquisar/{tipo}", response_model=list[UserOut])
 def pesquisar_usuarios_por_tipo(tipo: str, db: Session = Depends(get_db)):
-    """
-    PESQUISA usuários por tipo específico
-    """
     try:
         usuarios = db.query(User).filter(User.tipo.ilike(f"%{tipo}%")).all()
         

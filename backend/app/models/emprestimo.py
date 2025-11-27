@@ -15,7 +15,6 @@ class EmprestimoOut(EmprestimoBase):
     data_emprestimo: datetime = Field(..., description="Data do empréstimo")
     data_devolucao_real: Optional[datetime] = Field(None, description="Data real da devolução")
     status: str = Field(..., description="Status: ativo, finalizado, atrasado")
-    valor_multa: float = Field(..., description="Valor da multa")
     
     class Config:
         from_attributes = True

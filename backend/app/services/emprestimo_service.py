@@ -30,8 +30,7 @@ def criar_emprestimo_service(db: Session, emprestimo_data: EmprestimoCreate):
         usuario_id=emprestimo_data.usuario_id,
         exemplar_id=emprestimo_data.exemplar_id,
         data_devolucao_prevista=emprestimo_data.data_devolucao_prevista,
-        status="ativo",
-        valor_multa=0.0
+        status="ativo"
     )
     
     exemplar.status = "emprestado"
@@ -68,4 +67,3 @@ def obter_emprestimos_ativos_usuario(db: Session, usuario_id: int) -> int:
         Emprestimo.usuario_id == usuario_id,
         Emprestimo.status == "ativo"
     ).count()
-    

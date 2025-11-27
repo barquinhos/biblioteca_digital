@@ -83,7 +83,6 @@ class Emprestimo(Base):
     data_devolucao_prevista: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     data_devolucao_real: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     status: Mapped[str] = mapped_column(String(20), nullable=False, default="ativo", index=True)  # ativo, finalizado, atrasado, cancelado
-    valor_multa: Mapped[float] = mapped_column(nullable=False, default=0.0)
 
     usuario: Mapped["User"] = relationship(back_populates="emprestimos")
     exemplar: Mapped["Exemplar"] = relationship(back_populates="emprestimos")
