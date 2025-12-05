@@ -16,8 +16,6 @@ class User(Base):
     email: Mapped[str] = mapped_column(String(255), nullable=False, index=True, unique=True)
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
     tipo: Mapped[str] = mapped_column(String(20), nullable=False, index=True)  # atendente, aluno, professor, tecnico
-    status: Mapped[str] = mapped_column(String(20), nullable=False, default="ativo", index=True)  # ativo, suspenso, inativo
-    motivo_suspensao: Mapped[str | None] = mapped_column(Text, nullable=True)
     
     emprestimos: Mapped[list["Emprestimo"]] = relationship(
         back_populates="usuario", 

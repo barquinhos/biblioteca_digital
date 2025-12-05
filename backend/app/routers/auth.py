@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 from backend.app.database import get_db
 from backend.app.db_models import User
-from backend.app.models.user import UserCreate, UserOut, UserLogin
+from backend.app.models.user import UserCreate, UserOut, UserLogin, UserUpdate
 from backend.app.utils.security import create_access_token, hash_password, verify_password
 from backend.app.services.emprestimo_service import verificar_limite_emprestimos, obter_limite_usuario, obter_emprestimos_ativos_usuario
 
@@ -35,7 +35,6 @@ def register(payload: UserCreate, db: Session = Depends(get_db)):
       matricula=payload.matricula,
       email=email_norm,
       tipo=payload.tipo,
-      # status="ativo",
       password_hash=hash_password(payload.senha)
    )
 
@@ -158,3 +157,39 @@ def status_emprestimos_usuario(user_id: int, db: Session = Depends(get_db)):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Erro ao consultar status: {str(e)}"
         )
+    
+@router.put("/usuarios/{usuario_id}", response_model=UserOut)
+def atualizar_usuario(
+    usuario_id: int,
+    user_data: UserUpdate,
+    db: Session = Depends(get_db)
+):
+    usuario = db.query(User).filter(User.id == usuario_id).first()
+    
+    if not usuario:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Usuário não encontrado"
+        )
+    
+    if user_data.email and user_data.email != usuario.email:
+        email_existente = db.query(User).filter(
+            User.email == user_data.email,
+            User.id != usuario_id
+        ).first()
+        
+        if email_existente:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Este email já está cadastrado"
+            )
+    
+    update_data = user_data.dict(exclude_unset=True)
+    
+    for campo, valor in update_data.items():
+        setattr(usuario, campo, valor)
+    
+    db.commit()
+    db.refresh(usuario)
+    
+    return usuario

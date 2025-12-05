@@ -9,7 +9,6 @@ from backend.app.utils.validators import tipo_de_usuario
 
 EmailLower = Annotated[EmailStr, BeforeValidator(lambda v: str(v).lower())]
 TipoUser = Annotated[str, BeforeValidator(tipo_de_usuario)]
-# StatusUser = Annotated[str, BeforeValidator(status_usuario)]
 
 class UserBase(BaseModel):
     id: int
@@ -17,7 +16,6 @@ class UserBase(BaseModel):
     matricula: str
     email: EmailLower
     tipo: TipoUser  
-    # status: StatusUser 
 
 class UserCreate(UserBase):
     senha: str = Field(..., min_length=6, max_length=72)
@@ -25,7 +23,15 @@ class UserCreate(UserBase):
 class UserLogin(BaseModel):
     email: EmailLower
     senha: str = Field(..., min_length=6, max_length=72)
+
+class UserUpdate(BaseModel):
+    nome: Optional[str] = Field(None, min_length=2, max_length=100, description="Nome do usuário")
+    email: Optional[EmailStr] = Field(None, description="Email do usuário")
+    tipo: Optional[str] = Field(None, description="Tipo: aluno, professor, bibliotecario")
     
+    class Config:
+        from_attributes = True
+
 class UserOut(UserBase):
     id: Optional[int] = None
     email: EmailLower
